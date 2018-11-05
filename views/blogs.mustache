@@ -1,0 +1,31 @@
+<html>
+<head></head>
+<body>
+
+  <div>
+    <a href="/blogs">View All Blogs</a>
+    <a href="/blogs/new">Add New Blog</a>
+  </div>
+
+  <h1>List of Blogs</h1>
+  <ul>
+  {{#blogs}}
+
+  <li>
+    <div>Blog Title: {{blogtitle}}</div>
+    <div>Blog Author: {{blogauthor}} </div>
+    <div>Blog: {{blogdescription}}</div>
+
+    <form action="/deleteBlog" method="POST">
+      <input type="hidden" name="blogId" value="{{blogid}}" />
+      <div><input type="submit" value="Remove"/>
+    </form>
+    <a href="/blogs/update/{{blogid}}">Update</a>
+  </li>
+
+  {{/blogs}}
+</ul>
+
+
+</body>
+</html>

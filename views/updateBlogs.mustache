@@ -1,0 +1,22 @@
+<html>
+<head></head>
+<body>
+
+  <h1>Update Blog</h1>
+
+  <div>
+    <a href="/blogs">View All Blog</a>
+    <a href="/blogs/new">Add New Blog</a>
+  </div>
+
+  <form action="/updateBlog" method="POST">
+      <input type="hidden" name = "blogId" value="{{blogid}}" />
+      <input type="text" name = "blogtitle" value="{{blogtitle}}"  />
+      <input type="text" name = "blogauthor" value="{{blogauthor}}"  />
+      <textarea name ="blogdescription" rows="15" cols="50"/>{{blogdescription}}</textarea>
+      <input type="submit" value="Submit" />
+  </form>
+
+
+</body>
+</html>
