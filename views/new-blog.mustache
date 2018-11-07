@@ -1,0 +1,23 @@
+<html>
+<head></head>
+<body>
+
+  <h1>Add New Blog</h1>
+
+  <div>
+    <a href="/blogs">View All Blogs</a>
+    <a href="/blogs/new">Add New Blog</a>
+  </div>
+
+  <form action="/add-blog" method="POST">
+      <input type="text" name = "blogtitle" placeholder="Enter name" />
+      <input type="text" name = "blogauthor" placeholder="Enter name" />
+      <textarea name ="blogdescription" rows="15" cols="50">
+Enter blog here...</textarea>
+      <input type="hidden" name ="bloglikes" value="0">
+      <input type="submit" value="Submit" />
+  </form>
+
+
+</body>
+</html>

@@ -1,47 +1,107 @@
-
 const express = require('express')
 const mustacheExpress = require('mustache-express')
+const port = 3000
 const bodyParser = require('body-parser')
 const app = express()
-// import the pg-promise library which is used to connect and execute SQL on a postgres database
 const pgp = require('pg-promise')()
-// connection string which is used to specify the location of the database
-const connectionString = "postgres://localhost:5432/blogsdb"
-// creating a new database object which will allow us to interact with the database
+const connectionString = "postgres://localhost:5432/blogdb"
 const db = pgp(connectionString)
 
+
+app.engine('mustache', mustacheExpress())
+app.set('views', './views')
+app.set('view engine', 'mustache')
 app.use(bodyParser.urlencoded({ extended: false }))
-app.engine('mustache',mustacheExpress())
-app.set('views','./views')
-app.set('view engine','mustache')
-let blogs = [{dishId:1},{title:"technology"}, {author:"Amin"},{description:"story"}]
-blogs =[]
 
 
-app.get('/addBlog',function(req,res){
-  res.render('addBlog')
+app.post('/add-blog', function (req, res) {
 
-})
+    let blogtitle = req.body.blogtitle
+    let blogauthor = req.body.blogauthor
+    let blogdescription = req.body.blogdescription
+    let bloglikes = req.body.bloglikes
 
-app.post('/addBlog',function(req,res){
-  let dishId =req.body.dishId
-  let title = req.body.title
-  let author = req.body.author
-  let description = req.body.description
-  let newPost = {dish: dishId, title: title, author: author, description: description}
-  blogs.push(newPost)
-
-  res.redirect("/blogs")
+    db.none('INSERT INTO blogs(blogtitle,blogauthor,blogdescription, bloglikes) VALUES($1,$2,$3,$4)', [blogtitle, blogauthor, blogdescription, bloglikes])
+        .then(function () {
+            res.redirect('/blogs')
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
 
 })
 
-app.get('/blogs',function(req,res){
-  res.render("blogs",{blogs:blogs})
+app.post('/like-blog', function (req, res) {
+
+    let bloglikes = parseInt(req.body.bloglikes)
+    console.log(bloglikes)
+    let blogId = req.body.blogId
+    bloglikes += 1
+
+    db.none('UPDATE blogs SET bloglikes = $1 WHERE blogid = $2',[bloglikes, blogId])
+        .then(function () {
+            res.redirect('/blogs')
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
 
 })
 
+app.get('/blogs/update/:blogId', function (req, res) {
 
+    let blogId = req.params.blogId
 
-app.listen(3000,function(){
-  console.log(" Server is starting")
+    db.one('SELECT blogid,blogtitle,blogauthor,blogdescription FROM blogs WHERE blogid = $1', [blogId])
+        .then(function (result) {
+            res.render('update-blog', result)
+        })
+
+})
+
+app.post('/update-blog', function (req, res) {
+
+    let blogtitle = req.body.blogtitle
+    let blogdescription = req.body.blogdescription
+    let blogauthor = req.body.blogauthor
+    let blogId = req.body.blogId
+
+    db.none('UPDATE blogs SET blogtitle = $1, blogdescription = $2, blogauthor = $3 WHERE blogid = $4', [blogtitle, blogdescription, blogauthor, blogId])
+        .then(function () {
+            res.redirect('/blogs')
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
+
+})
+
+app.post('/delete-blog', function (req, res) {
+
+    let blogId = req.body.blogId
+
+    db.none('DELETE FROM blogs WHERE blogid = $1;', [blogId])
+        .then(function () {
+            res.redirect('/blogs')
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
+
+})
+
+app.get('/blogs', function (req, res) {
+    db.any('SELECT blogid,blogtitle,blogauthor,blogdescription,bloglikes FROM blogs ORDER BY blogid;')
+        .then(function (result) {
+            res.render('blogs', { blogs: result })
+        })
+})
+
+app.get('/blogs/new', function (req, res) {
+    res.render('new-blog')
+})
+
+app.listen(port, function () {
+
+    console.log(`Server Running...`)
 })
