@@ -12,16 +12,17 @@
   {{#blogs}}
 
   <li>
-    <div>Blog Title: {{blogtitle}}</div>
-    <div>Blog Author: {{blogauthor}} </div>
-    <div>Blog: {{blogdescription}}</div>
-
-    <form action="/deleteBlog" method="POST">
+    <div> Blog id: {{blogId}}
+    <div>Blog Title: {{title}}</div>
+    <div>Blog Author: {{author}} </div>
+    <div>Blog Description: {{description}}</div>
+  <form action="/deleteBlog" method="POST">
       <input type="hidden" name="blogId" value="{{blogid}}" />
       <div><input type="submit" value="Remove"/>
-    </form>
+  </form>
     <a href="/blogs/update/{{blogid}}">Update</a>
   </li>
+
 
   {{/blogs}}
 </ul>

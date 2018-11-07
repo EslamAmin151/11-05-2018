@@ -11,65 +11,37 @@ const connectionString = "postgres://localhost:5432/blogsdb"
 const db = pgp(connectionString)
 
 app.use(bodyParser.urlencoded({ extended: false }))
-
 app.engine('mustache',mustacheExpress())
 app.set('views','./views')
 app.set('view engine','mustache')
+let blogs = [{dishId:1},{title:"technology"}, {author:"Amin"},{description:"story"}]
+blogs =[]
 
-app.post('/deleteBlog',function(req,res){
 
-  let blogID = req.body.blogId
-
-  db.none('DELETE FROM dishes WHERE blogId = $1;',[blogId])
-  .then(function(){
-    res.redirect('/blogs')
-  })
-  .catch(function(error){
-    console.log(error)
-  })
+app.get('/addBlog',function(req,res){
+  res.render('addBlog')
 
 })
 
-
-app.post('/blogs',function(req,res){
-
-  let name = req.body.title
+app.post('/addBlog',function(req,res){
+  let dishId =req.body.dishId
+  let title = req.body.title
+  let author = req.body.author
   let description = req.body.description
+  let newPost = {dish: dishId, title: title, author: author, description: description}
+  blogs.push(newPost)
 
-  db.none('INSERT INTO dishes(name,description) VALUES($1,$2$)',[name,description])
-  .then(function(){
-    res.redirect('/blogs')
-  })
-  .catch(function(error){
-    console.log(error)
-  })
+  res.redirect("/blogs")
 
-})
-
-app.get('/blogs/update/:blogId',function(req,res){
-
-  let blogId = req.params.blogId
-
-  db.one('SELECT name,course,description FROM dishes WHERE blogId = $1',[blogId])
-  .then(function(result){
-    console.log("result value")
-    console.log(result)
-    res.render('updateBlog',{blog : result })
-  })
-
-})
-
-app.get('/blogs/new',function(req,res){
-  res.render('newBlog')
 })
 
 app.get('/blogs',function(req,res){
-db.any('SELECT dishid,name,course,description from dishes;')
-  .then(function(result){
-    res.render('blogs',{blogs : result})
-  })
+  res.render("blogs",{blogs:blogs})
+
 })
 
-app.listen(3000,function(req,res){
-  console.log("Server has started...")
+
+
+app.listen(3000,function(){
+  console.log(" Server is starting")
 })
